@@ -1,0 +1,730 @@
+openapi: 3.0.2
+servers:
+  - url: /v7
+info:
+
+  version: 1.0.17
+  title: Swagger Airline - OpenAPI 3.0
+  
+tags:
+  - name: flight
+    description: Everything about your Flights
+  - name: booking
+    description: Access to booking orders
+  - name: user
+    description: Operations about user
+paths:
+  /flight:
+    post:
+      tags:
+        - flight
+      summary: Add a new flight on the booking
+      description: Add a new flight on the booking
+      operationId: addFlight
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+        '405':
+          description: Invalid input
+      security:
+        - airline_auth:
+            - 'admin'
+      requestBody:
+        description: Create a new flight on the booking
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flight'
+    put:
+      tags:
+        - flight
+      summary: Update an existing flight
+      description: Update an existing flight by Id
+      operationId: updateFlight
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Flight not found
+        '405':
+          description: Validation exception
+      security:
+        - airline_auth:
+            - 'admin'
+      requestBody:
+        description: Update an existent Flight in the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flight'
+  /flight/findByName:
+    get:
+      tags:
+        - flight
+      summary: Finds Flights by name
+      operationId: findFlightsByStatus
+      parameters:
+        - name: name
+          in: query
+          description: Name that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+        '400':
+          description: Invalid status value
+      security:
+        - airline_auth:
+            - 'admin'
+            - 'user'
+  /flight/findByDepartingCity:
+    get:
+      tags:
+        - flight
+      summary: Finds Flight by departing city
+      operationId: findPetsByTags
+      parameters:
+        - name: departing_city
+          in: query
+          description: Departing city to find by
+          required: false
+          explode: true
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+        '400':
+          description: Invalid tag value
+      security:
+        - airline_auth:
+            - 'admin'
+            - 'user'
+  /flight/findByFormData:
+    get:
+      tags:
+        - flight
+      summary: Finds Flight by Data Form
+      operationId: findFlightByFormData
+      parameters:
+        - name: departing_city
+          in: query
+          description: Departing city to find by
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: arriving_city
+          in: query
+          description: Arriving city to find by
+          required: false
+          explode: true
+          schema:
+            type: string  
+        - name: date
+          in: query
+          description: Date to find by
+          required: false
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+        '400':
+          description: Invalid input value
+      security:
+        - airline_auth:
+            - 'admin'
+            - 'user' 
+  '/flight/{flightId}':
+    get:
+      tags:
+        - flight
+      summary: Find flight by ID
+      description: Returns a single flight
+      operationId: getFlightById
+      parameters:
+        - name: flightId
+          in: path
+          description: ID of flight to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Flight not found
+      security:
+        - api_key: []
+        - airline_auth:
+            - 'admin'
+            - 'user'
+    post:
+      tags:
+        - flight
+      summary: Updates a flight in the store with form data
+      description: ''
+      operationId: updateFlightWithForm
+      parameters:
+        - name: flightId
+          in: path
+          description: ID of flight that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of Flight that needs to be updated
+          schema:
+            type: string
+        - name: departing_airport
+          in: query
+          description: Departing airport city of flight that needs to be updated
+          schema:
+            type: string
+        - name: arriving_airport
+          in: query
+          description: Arriving airport city of flight that needs to be updated
+          schema:
+            type: string    
+      responses:
+        '405':
+          description: Invalid input
+      security:
+        - airline_auth:
+            - 'admin'
+    delete:
+      tags:
+        - flight
+      summary: Delete a flight
+      description: ''
+      operationId: deleteFlight
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: flightId
+          in: path
+          description: Flight id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid flight value
+      security:
+        - airline_auth:
+            - 'admin'
+  /booking/order:
+    post:
+      tags:
+        - booking
+      summary: Place an order for a flight
+      description: Place a new order on the booking
+      operationId: placeOrder
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '405':
+          description: Invalid input
+      security:
+        - airline_auth:
+            - 'user'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+    put:
+      tags:
+        - booking
+      summary: Update an existing order
+      description: Update an existing order by Id
+      operationId: updateOrder
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+        '405':
+          description: Validation exception
+      security:
+        - airline_auth:
+            - 'user'
+            - 'admin'
+      requestBody:
+        description: Update an existent Order on the booking
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+  /booking/order/FindOrderByDate:
+    get:
+      tags:
+        - booking
+      summary: Find Order by booking date
+      description: ''
+      operationId: getOrdertByDate
+      parameters:
+        - name: bookingDate
+          in: query
+          description: Date of Order to return
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid Date supplied
+        '404':
+          description: Order not found
+      security:
+        - airline_auth:
+            - 'admin'
+            - 'user'
+     
+  '/booking/order/{orderId}':
+    get:
+      tags:
+        - booking
+      summary: Find order by ID
+      description: ''
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be fetched
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+      security:
+        - airline_auth:
+          - 'user'
+        
+    delete:
+      tags:
+        - booking
+      summary: delete order by ID
+      description: ''
+      operationId: deleteOrder
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of the order that needs to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+      security:
+        - airline_auth:
+          - 'user'
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: Created user object
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username/password supplied
+     
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+      security:
+        - airline_auth:
+            - 'user'
+  '/user/{username}':
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched.'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - airline_auth:
+            - 'user'
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+      security:
+        - airline_auth:
+            - 'user'
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - airline_auth:
+            - 'user'
+components:
+  schemas:
+    Order:
+      required:
+        - flightId
+        - status
+        - passenger
+      properties:
+        passenger:
+          $ref: '#/components/schemas/Passenger'
+        id:
+          type: integer
+          format: int64
+          example: 10
+        flightId:
+          type: integer
+          format: int64
+          example: 198772
+        seatNumber:
+          type: integer
+          format: int32
+          example: 2
+        shipDate:
+          type: string
+          format: date-time
+          example: '10-03-2022T15:20:00Z'
+        status:
+          type: string
+          description: Order Status
+          enum:
+            - placed
+            - approved
+            - canceled
+          example: approved
+      xml:
+        name: order
+      type: object
+    Passenger:
+      required:
+        - firstname
+        - lastname
+        - passport_number
+        - username
+        - date_of_birth
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        username:
+          type: string
+          example: UserName
+        firstname:
+          type: string
+          example: Alina
+        lastname:
+          type: string
+          example: Pavliv
+        passport_namber:
+          type: string
+          example: 'CE14567'
+        date_of_birth:
+          type: string
+          format: date
+          example: 10-02-1998
+      xml:
+        name: customer
+      type: object
+    Airport:
+      required:
+        - name
+        - country
+        - city
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Ukraine National Airport
+        country: 
+          type: string
+          example: Ukraine
+        city:
+          type: string
+          example: Boryspil
+      xml:
+        name: category
+      type: object
+    User:
+      required:
+        - username
+        - firstName
+        - lastName
+        - password
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: Alina
+        lastName:
+          type: string
+          example: Pavliv
+        email:
+          type: string
+          example: pavlivalina@gmail.com
+        password:
+          type: string
+          example: 12345
+        phone:
+          type: string
+          example: 12345
+      xml:
+        name: user
+      type: object
+    Flight:
+      required:
+        - name
+        - departing_airport
+        - arriving_airport
+        - status
+        - date
+        - time
+      properties:
+        id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: '067'
+        departing_airport:
+          $ref: '#/components/schemas/Airport'
+        arriving_airport:
+          $ref: '#/components/schemas/Airport'
+        status:
+          type: string
+          description: flight status on the booking
+          enum:
+            - available
+            - sold-out
+        date:
+          type: string
+          format: date
+          example: 10-11-2022
+          
+      xml:
+        name: flight
+      type: object
+  requestBodies:
+    Flight:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Flight'
+      description: Flight that needs to be added to the booking
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+      description: List of user object
+  securitySchemes:
+    airline_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: 'https://petstore.swagger.io/oauth/authorize'
+          scopes:
+            'admin': modify flights in your account
+            'user': read your flights
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
