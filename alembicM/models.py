@@ -1,13 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, Enum, orm, ForeignKey, DateTime, Date, Boolean, Float
-from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
-
-DBURL = "postgresql://postgres:2580@localhost:5432/flybooking"
-engine = create_engine(DBURL)
-
-SessionFactory = sessionmaker(bind=engine)
-Session = scoped_session(SessionFactory)
-
-Base = declarative_base()
+from sqlalchemy import Column, Integer, String, Enum, orm, ForeignKey, DateTime, Date, Boolean, Float
+from .db import Base
 
 
 class User(Base):
@@ -51,9 +43,12 @@ class Flight(Base):  # chornovil
     num_of_seats = Column(Integer, nullable=False)
 
     arriving_airport_id = Column(Integer, ForeignKey(Airport.airport_id))
-    arriving_airport = orm.relationship(Airport, foreign_keys=[arriving_airport_id], backref="flight_from", lazy="joined")
+    arriving_airport = orm.relationship(Airport, foreign_keys=[arriving_airport_id], backref="flight_from",
+                                        lazy="joined")
     departing_airport_id = Column(Integer, ForeignKey(Airport.airport_id))
-    departing_airport = orm.relationship(Airport, foreign_keys=[departing_airport_id], backref="flight_to", lazy="joined")
+    departing_airport = orm.relationship(Airport, foreign_keys=[departing_airport_id], backref="flight_to",
+                                         lazy="joined")
+
 
 class Order(Base):
     __tablename__ = "order"
