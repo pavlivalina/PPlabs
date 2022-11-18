@@ -7,6 +7,7 @@ class UserSchema(SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         include_fk = True
+    
 
 
 class FlightSchema(SQLAlchemyAutoSchema):

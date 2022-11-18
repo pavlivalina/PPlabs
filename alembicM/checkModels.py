@@ -1,12 +1,12 @@
-from models import Session, User, Passenger, Airport, Flight, Order
-from .db import db_session
+from models import User, Passenger, Airport, Flight, Order
+from db import db_session
 
 session = db_session()
 
 user = User(user_id=1, admin=False, username="Davemag", firstname="Oleh", lastname="Lozovyi",
-            email="abcd@im.a", phone_number="123456789")
+            email="abcd@im.a", phone_number="123456789", password="my_password")
 user1 = User(user_id=2, admin=False, username="NazarcO", firstname="Nazar", lastname="Lomachinkiy",
-             email="abc@im.a", phone_number="123476789")
+             email="abc@im.a", phone_number="123476789", password="some_password")
 
 passenger = Passenger(passenger_id=1, firstname="Oleh", lastname="Lozovyi", date_of_birth='2002-09-10',
                       passport_number="1234", user_id=1)

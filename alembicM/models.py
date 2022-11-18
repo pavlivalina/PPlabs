@@ -5,13 +5,13 @@ from .db import Base
 class User(Base):
     __tablename__ = "user"
     user_id = Column(Integer, primary_key=True)
-    admin = Column(Boolean, default=False, nullable=False)
     username = Column(String(45), nullable=False, unique=True)
     firstname = Column(String(20), nullable=False)
     lastname = Column(String(20), nullable=False)
     email = Column(String(45), nullable=False, unique=True)
     phone_number = Column(String(15), unique=True)
-
+    password = Column(String(64), nullable=False)
+    role = Column(String(32), default="passenger", nullable=False)
 
 class Passenger(Base):
     __tablename__ = "passenger"

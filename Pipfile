@@ -11,9 +11,11 @@ sqlalchemy = "*"
 psycopg2 = "*"
 flask-restful = "*"
 marshmallow-sqlalchemy = "*"
+Flask-JWT-Extended = "*"
+flask_bcrypt = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.7"
-python_full_version = "3.7.9"
+
