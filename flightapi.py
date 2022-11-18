@@ -5,17 +5,21 @@ from alembicM.models import User, Passenger, Airport, Flight, Order
 from schemas import FlightSchema
 from marshmallow.exceptions import ValidationError
 from resp_error import errs, json_error
+from main import admin_required, flight_administrator_required, get_user
+from flask_jwt_extended import jwt_required
 
 flight_schema = FlightSchema()
 
 
 class FlightIdAPI(Resource):
+    
     def get(self, flight_id):
         flight = Flight.query.get(flight_id)
         if not flight:
             return errs.not_found
         return flight_schema.dump(flight), 200
 
+    @flight_administrator_required()
     def delete(self, flight_id):
         flight = Flight.query.get(flight_id)
         if not flight:
@@ -30,6 +34,7 @@ class FlightAPI(Resource):
         flights_list = Flight.query.all()
         return flight_schema.dump(flights_list, many=True), 200
 
+    @flight_administrator_required()
     def post(self):
         json_data = request.get_json()
         if not json_data:
@@ -50,6 +55,7 @@ class FlightAPI(Resource):
         db_session.commit()
         return json_data, 201
 
+    @flight_administrator_required()
     def put(self):
         json_data = request.get_json()
         if not json_data:
